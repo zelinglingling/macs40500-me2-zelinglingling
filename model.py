@@ -44,9 +44,6 @@ class StandingOvationModel(Model):
         width=20,
         height=20,
         threshold=0.5,
-        quality_distribution="uniform",
-        mean_quality=0.5,
-        quality_noise=0.15,
         neighborhood="Five Neighbors",
         update_mode="Synchronous",
         seed=None,
@@ -55,9 +52,6 @@ class StandingOvationModel(Model):
         self.width = width
         self.height = height
         self.threshold = threshold
-        self.quality_distribution = quality_distribution
-        self.mean_quality = mean_quality
-        self.quality_noise = quality_noise
         self.neighborhood = neighborhood
         self.update_mode = update_mode
         self.running = True
@@ -70,7 +64,9 @@ class StandingOvationModel(Model):
 
         for y in range(height):
             for x in range(width):
-                quality = self._draw_quality()
+                # The paper's baseline draws each agent's perceived quality
+                # independently from a uniform distribution on [0, 1].
+                quality = self.random.random()
                 agent = AudienceAgent(
                     model=self,
                     pos=(x, y),
@@ -91,19 +87,6 @@ class StandingOvationModel(Model):
             }
         )
         self.datacollector.collect(self)
-
-    def _draw_quality(self):
-        """Sample a perceived quality value for one agent.
-
-        The paper's baseline uses a uniform draw on [0, 1]. The normal option
-        is an extension not explicitly in the paper but consistent with its
-        discussion of heterogeneous signal distributions. Quality is clamped
-        to [0, 1] for the normal case to keep it a valid threshold input.
-        """
-        if self.quality_distribution == "normal":
-            q = self.random.gauss(self.mean_quality, self.quality_noise)
-            return max(0.0, min(1.0, q))
-        return self.random.random()
 
     def _agent_at(self, x, y):
         """Return the agent at (x, y), or None if out of bounds."""
@@ -267,4 +250,3 @@ class StandingOvationModel(Model):
             self.running = False
 
         self.datacollector.collect(self)
-
