@@ -4,9 +4,8 @@ from mesa import Agent
 class AudienceAgent(Agent):
     """One audience member in Miller and Page's Standing Ovation Problem."""
 
-    def __init__(self, model, pos, quality, threshold=0.5):
+    def __init__(self, model, quality, threshold=0.5):
         super().__init__(model)
-        self.pos = pos
         self.quality = quality
         self.threshold = threshold
 
