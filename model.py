@@ -69,7 +69,6 @@ class StandingOvationModel(Model):
                 quality = self.random.random()
                 agent = AudienceAgent(
                     model=self,
-                    pos=(x, y),
                     quality=quality,
                     threshold=threshold,
                 )
